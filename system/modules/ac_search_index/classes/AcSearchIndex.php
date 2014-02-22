@@ -14,11 +14,6 @@
 /**
  * Class AcSearchIndex
  * Provide methods to get auto completer choices
- *
- * @copyright  Leo Unglaub 2012
- * @author     Leo Unglaub <leo@leo-unglaub.net>
- * @package    ac_search_index
- * @license    LGPL
  */
 class AcSearchIndex extends System
 {
@@ -30,13 +25,15 @@ class AcSearchIndex extends System
 	 */
 	public function getChoices()
 	{
-		$this->import('Database');
-		$intAcid = str_replace('ctrl_keywords_', '', $this->Input->get('acid'));
+		$objDb = Database::getInstance();
+		$intAcid = str_replace('ctrl_keywords_', '', Input::get('acid'));
+
 
 		// try loading all settings from tl_module
-		$objAcModule = $this->Database->prepare('SELECT ac_si_language,ac_si_root_sites,ac_si_blacklist,ac_si_maxChoices FROM tl_module WHERE type="ac_search_index" AND id=?')
-									  ->limit(1)
-									  ->executeUncached($intAcid);
+		$objAcModule = $objDb->prepare('SELECT ac_si_language,ac_si_root_sites,ac_si_blacklist,ac_si_maxChoices FROM tl_module WHERE type="ac_search_index" AND id=?')
+							 ->limit(1)
+							 ->executeUncached($intAcid);
+
 
 		// check if we found the module
 		if ($objAcModule->numRows == 1)
@@ -50,7 +47,7 @@ class AcSearchIndex extends System
 
 			// the main condition
 			$arrWhere[] = 'word LIKE ?';
-			$arrValues[] = '%' . strtolower($this->Input->post('value')) . '%';
+			$arrValues[] = '%' . strtolower(Input::post('value')) . '%';
 
 			// the blacklist
 			if (strlen($objAcModule->ac_si_blacklist) > 0)
@@ -75,9 +72,10 @@ class AcSearchIndex extends System
 
 
 			// get all keywords from the database
-			$objKeyword = $this->Database->prepare('SELECT DISTINCT word FROM tl_search_index WHERE ' . implode(' AND ', $arrWhere) . ' ORDER BY relevance DESC')
-										 ->limit($objAcModule->ac_si_maxChoices)
-										 ->executeUncached($arrValues);
+			$objKeyword = $objDb->prepare('SELECT DISTINCT word FROM tl_search_index WHERE ' . implode(' AND ', $arrWhere) . ' ORDER BY relevance DESC')
+								->limit($objAcModule->ac_si_maxChoices)
+								->executeUncached($arrValues);
+
 
 			// if we found some choices, return them
 			if ($objKeyword->numRows > 0)

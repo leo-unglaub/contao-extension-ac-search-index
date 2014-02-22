@@ -14,15 +14,9 @@
 /**
  * Class ModuleAcSearchIndex
  * Provide helper methods for the auto completer
- *
- * @copyright  Leo Unglaub 2012
- * @author     Leo Unglaub <leo@leo-unglaub.net>
- * @package    ac_search_index
- * @license    LGPL
  */
 class ModuleAcSearchIndex extends Module
 {
-
 	/**
 	 * Template
 	 * @var string

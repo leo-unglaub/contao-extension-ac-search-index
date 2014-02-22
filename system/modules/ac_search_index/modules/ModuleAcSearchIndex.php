@@ -59,33 +59,29 @@ class ModuleAcSearchIndex extends Module
 	protected function compile()
 	{
 		// create the new Auto Completer object
-		$objAutoCompleter = new AutoCompleter();
-		$objAutoCompleter->formId = 'ctrl_keywords_' . $this->id;
-		$objAutoCompleter->minLength = $this->ac_si_minLength;
-		$objAutoCompleter->width = $this->ac_si_width;
-		$objAutoCompleter->maxChoices = $this->ac_si_maxChoices;
-		$objAutoCompleter->zIndex = $this->ac_si_zIndex;
-		$objAutoCompleter->delay = $this->ac_si_delay;
-		$objAutoCompleter->autoSubmit = $this->ac_si_autoSubmit;
-		$objAutoCompleter->selectFirst = $this->ac_si_selectFirst;
-		$objAutoCompleter->multiple = $this->ac_si_multiple;
-		$objAutoCompleter->separator = ($this->ac_si_separator == '') ? ' ' : $this->ac_si_separator;
-		$objAutoCompleter->autoTrim = $this->ac_si_autoTrim;
-		$objAutoCompleter->relative = $this->ac_si_relative;
-		$objAutoCompleter->generate();
+		$objAc = new AutoCompleter();
+		$objAc->formId = 'ctrl_keywords_' . $this->id;
+		$objAc->minLength = $this->ac_si_minLength;
+		$objAc->width = $this->ac_si_width;
+		$objAc->maxChoices = $this->ac_si_maxChoices;
+		$objAc->zIndex = $this->ac_si_zIndex;
+		$objAc->delay = $this->ac_si_delay;
+		$objAc->autoSubmit = $this->ac_si_autoSubmit;
+		$objAc->selectFirst = $this->ac_si_selectFirst;
+		$objAc->multiple = $this->ac_si_multiple;
+		$objAc->separator = ($this->ac_si_separator == '') ? ' ' : $this->ac_si_separator;
+		$objAc->autoTrim = $this->ac_si_autoTrim;
+		$objAc->relative = $this->ac_si_relative;
+		$objAc->generate();
 
-
-		// get the "jump to" page
-		$objJumpTo = $this->Database->prepare('SELECT id,alias FROM tl_page WHERE id=?')
-									->limit(1)
-									->execute($this->jumpTo);
 
 		// add the jumpTo Url
-		if ($objJumpTo->numRows == 1)
+		if ($this->jumpTo > 0)
 		{
-			$arrJumpTo = (array) $objJumpTo->fetchAssoc();
-			$this->Template->action = $this->generateFrontendUrl($arrJumpTo);
+			$objJumpTo = PageModel::findPublishedById($this->jumpTo);
+			$this->Template->action = $objJumpTo->getFrontendUrl();
 		}
+
 
 		// add some values to the template
 		$this->Template->uniqueId = 'ctrl_keywords_' . $this->id;

@@ -14,21 +14,16 @@
 /**
  * Class AcSearchIndexHelper
  * Provide helper methods for the auto completer
- *
- * @copyright  Leo Unglaub 2012
- * @author     Leo Unglaub <leo@leo-unglaub.net>
- * @package    ac_search_index
- * @license    LGPL
  */
 class AcSearchIndexHelper extends Controller
 {
 	/**
 	 * save_callback
-	 * prepare the ignore words for the database storage
+	 * Prepare the ignore words for the database storage.
 	 *
-	 * @param string $varValue
-	 * @param DataContainer $dc
-	 * @return string
+	 * @param	string 			$varValue	The value that needs cleaning.
+	 * @param	DataContainer	$dc			The current data container object.
+	 * @return	string						The cleaned value for the database.
 	 */
 	public function saveIgnoreWords($varValue, DataContainer $dc)
 	{
@@ -47,11 +42,11 @@ class AcSearchIndexHelper extends Controller
 
 	/**
 	 * load_callback
-	 * prepare the ignore words for the text field
+	 * Prepare the ignore words for the text field.
 	 *
-	 * @param string $varValue
-	 * @param DataContainer $dc
-	 * @return string
+	 * @param	string 			$varValue	The original value.
+	 * @param	DataContainer	$dc			The current data container object.
+	 * @return	string						The modified value.
 	 */
 	public function loadIgnoreWords($varValue, DataContainer $dc)
 	{
@@ -60,22 +55,27 @@ class AcSearchIndexHelper extends Controller
 
 
 	/**
-	 * Return all used languages in the search index
+	 * Return all used languages in the search index.
 	 *
-	 * @param void
-	 * @return array
+	 * @param	void
+	 * @return	array	A translated array with all languages.
 	 */
 	public function getSiteLanguages()
 	{
-		$this->import('Database');
+		// get all languages for the translation
 		$this->loadLanguageFile('languages');
 
+		// define some variables
 		$arrReturn = array();
+		$objDb = Database::getInstance();
 
-		$objLanguages = $this->Database->query('SELECT DISTINCT language FROM tl_search_index');
+
+		// get all used languages from the search index
+		$objLanguages = $objDb->query('SELECT DISTINCT language FROM tl_search_index');
+
+		// get the translation for all languages
 		while ($objLanguages->next())
 		{
-			// get the translated language name
 			$arrReturn[$objLanguages->language] = $GLOBALS['TL_LANG']['LNG'][$objLanguages->language];
 		}
 
@@ -84,17 +84,19 @@ class AcSearchIndexHelper extends Controller
 
 
 	/**
-	 * Return all root pages
+	 * Return all root pages.
 	 *
-	 * @param void
-	 * @return array
+	 * @param	void
+	 * @return	array	An array with all root pages
 	 */
 	public function getRootSites()
 	{
-		$this->import('Database');
-
+		// define some variables
+		$objDb = Database::getInstance();
 		$arrReturn = array();
-		$objRootSites = $this->Database->query('SELECT id,title,dns FROM tl_page WHERE type="root"');
+
+
+		$objRootSites = $objDb->query('SELECT id,title,dns FROM tl_page WHERE type="root"');
 
 		// prepare the root sites
 		while ($objRootSites->next())
